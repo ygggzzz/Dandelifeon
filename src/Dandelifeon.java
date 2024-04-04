@@ -191,6 +191,7 @@ public class Dandelifeon {
         //int num=in.nextInt();
         chessBoard.initMap();
         chessBoard.outputMap();
+        int step=0;
         while(true) //游戏主循环
         {
             boolean flag = chessBoard.stepOneSecond();
@@ -210,11 +211,21 @@ public class Dandelifeon {
                 break;
             }
 
-            try {
-                Thread.sleep(500); //休眠 看清输出
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            if(step<100)
+            {
+                step++;
             }
+            else
+            {
+                System.out.println("死循环");
+                break;
+            }
+
+//            try {
+//                Thread.sleep(1); //休眠 看清输出
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
             //清屏
             System.out.println(new String(new char[50]).replace("\0", "\r\n"));
         }
