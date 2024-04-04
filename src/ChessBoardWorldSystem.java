@@ -4,6 +4,8 @@ public class ChessBoardWorldSystem {
     public static int row=25;
     public static int col=25;
 
+    private static CellBlock[][] Cell=new CellBlock[ChessBoardWorldSystem.getRow()][ChessBoardWorldSystem.getCol()];
+    Dandelifeon Dandelifeon=new Dandelifeon();
     public static int getRow()
     {
         return ChessBoardWorldSystem.row;
@@ -13,9 +15,6 @@ public class ChessBoardWorldSystem {
     {
         return ChessBoardWorldSystem.col;
     }
-
-    static CellBlock[][] Cell=new CellBlock[ChessBoardWorldSystem.getRow()][ChessBoardWorldSystem.getCol()];
-    Dandelifeon Dandelifeon=new Dandelifeon();
 
     public static CellBlock getCell(int row, int col) {
         return Cell[row][col];
@@ -36,48 +35,8 @@ public class ChessBoardWorldSystem {
 
     public boolean stepOneSecond(Dandelifeon Dandelifeon) //每秒一循环
     {
-        //核心规则
-        //如果启命英周围 8 格区域中出现存活细胞，启命英将产出这些（细胞年龄之和 x 60）的魔力，
-        // 并且游戏范围内所有细胞均变为死亡细胞，游戏结束。
-        if (Dandelifeon.lifeGameCheck()) {
-            int count_check = Dandelifeon.getAccumulatedMana();
-            System.out.print("\nGameOver,Mana:" + count_check + "\n");
-            clearMap();
-            return false;
-        }
-        //如果一个细胞周围 8 格内的存活细胞数量 < 2 或 > 4该细胞会死亡并且年龄归 0 ；（即康威生命游戏中生命过少和过剩的情况）。
-        //如果一个存活细胞周围有 8 格内有 2 ~ 3 个其他存活细胞，该细胞的年龄 + 1 。
-        //如果一个死亡细胞周围8格内有 3 个存活细胞，该细胞会变为存活细胞，年龄则取周围 3 个存活细胞的年龄的最大值；（即康威生命游戏中的细胞繁殖）。
-        CellBlock[][] NewCell = new CellBlock[ChessBoardWorldSystem.row][ChessBoardWorldSystem.col];
-        for (int i = 0; i < ChessBoardWorldSystem.row; i++)
-        {
-            for (int j = 0; j < ChessBoardWorldSystem.col; j++)
-            {
-                NewCell[i][j] = new CellBlock(0, false);
-            }
-        }
-        for (int i = 0; i < ChessBoardWorldSystem.row; i++)
-        {
-            for (int j = 0; j < ChessBoardWorldSystem.col; j++)
-            {
-                int count = Dandelifeon.getSurround(i,j);
-                if (Cell[i][j].isAlive()) {
-                    if (count < 2 || count > 4) {
-                        NewCell[i][j].setAlive(false);
-                    } else if (count == 2 || count == 3) {
-                        NewCell[i][j] = Cell[i][j];
-                        NewCell[i][j].setAge(Cell[i][j].getAge() + 1);
-                    }
-                } else {
-                    if (count == 3) {
-                        NewCell[i][j].setAlive(true);
-                        int max = Dandelifeon.getMaxAge(i,j);
-                        NewCell[i][j].setAge(max);
-                    }
-                }
-            }
-        }
-        Cell = NewCell; //覆盖
+        if(Dandelifeon.lifeGameCheck())  { return false; }
+        Cell=Dandelifeon.makeOnceInteration(Cell);
         return true;
     }
 
@@ -140,7 +99,7 @@ public class ChessBoardWorldSystem {
         }
     }
 
-    public void clearMap()
+    public static void clearMap()
     {
         for (int i = 0; i < Cell.length; i++)
         {
