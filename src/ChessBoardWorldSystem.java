@@ -1,22 +1,30 @@
 import java.util.Scanner;
 
 public class ChessBoardWorldSystem {
-    public static int row=25;
-    public static int col=25;
+    public int row=25;
+    public int col=25;
+    private CellBlock[][] Cell;
+    Dandelifeon Dandelifeon;
 
-    private static CellBlock[][] Cell=new CellBlock[ChessBoardWorldSystem.getRow()][ChessBoardWorldSystem.getCol()];
-    Dandelifeon Dandelifeon=new Dandelifeon();
-    public static int getRow()
-    {
-        return ChessBoardWorldSystem.row;
+    public ChessBoardWorldSystem() {
+        Dandelifeon = new Dandelifeon();
+        Cell = new CellBlock[row][col];
+        row=25;
+        col=25;
     }
 
-    public static int getCol()
+
+    public int getRow()
     {
-        return ChessBoardWorldSystem.col;
+        return this.row;
     }
 
-    public static CellBlock getCell(int row, int col) {
+    public int getCol()
+    {
+        return this.col;
+    }
+
+    public CellBlock getCell(int row, int col) {
         return Cell[row][col];
     }
 
@@ -33,37 +41,39 @@ public class ChessBoardWorldSystem {
         return Dandelifeon.getCountMana();
     }
 
-    public boolean stepOneSecond(Dandelifeon Dandelifeon) //每秒一循环
+    public boolean stepOneSecond() //每秒一循环
     {
         if(Dandelifeon.lifeGameCheck())  { return false; }
         Cell=Dandelifeon.makeOnceInteration(Cell);
         return true;
     }
 
-    public void initMap(int CellNum,Dandelifeon Dandelifeon) //初始化，输入行列表示这个点有存活细胞
+    public void initMap() //初始化，随机设置存活细胞
     {
-        for (int i = 0; i < row; i++)
+        for (int i = 0; i < getRow(); i++)
         {
-            for (int j = 0; j < col; j++)
+            for (int j = 0; j < getCol(); j++)
             {
                 Cell[i][j] = new CellBlock(0, false);
             }
         }
-        Scanner in = new Scanner(System.in);
-        for (int i = 0; i < CellNum; i++)
+        for (int i = 0; i < getRow(); i++)
         {
-            int row = in.nextInt();
-            int col = in.nextInt();
-            //特判在启命英周围的细胞
-            if ((row >= Dandelifeon.getRow() - 1 && row <= Dandelifeon.getRow() + 1) || (col >= Dandelifeon.getCol() - 1 && col <= Dandelifeon.getCol())) {
-
-                continue;
+            for (int j = 0; j < getCol(); j++)
+            {
+                if(Math.random()<0.3)
+                {
+                    if ((i >= Dandelifeon.getRow() - 1 && i <= Dandelifeon.getRow() + 1) || (j >= Dandelifeon.getCol() - 1 && j <= Dandelifeon.getCol()))
+                    {
+                        continue;
+                    }
+                    setCellBlock(0,true,i,j);
+                }
             }
-            setCellBlock(0, true,row,col);
         }
     }
 
-    public void outputMap(Dandelifeon Dandelifeon)
+    public void outputMap()
     {
         for (int i = -1; i != row + 1; i++)
         {
@@ -99,7 +109,7 @@ public class ChessBoardWorldSystem {
         }
     }
 
-    public static void clearMap()
+    public void clearMap()
     {
         for (int i = 0; i < Cell.length; i++)
         {
@@ -112,37 +122,7 @@ public class ChessBoardWorldSystem {
 
     public void check()
     {
-        Scanner in = new Scanner(System.in);
-        int num=in.nextInt();
-        initMap(num,Dandelifeon);
-        outputMap(Dandelifeon);
-        while(true) //游戏主循环
-        {
-            boolean flag = stepOneSecond(Dandelifeon);
-            if(flag==false)
-            {
-                System.out.println("启命英周围 8 格区域中出现存活细胞");
-                break;
-            }
-
-            System.out.print("\n");
-            outputMap(Dandelifeon);
-
-            flag=Dandelifeon.scan();
-            if(flag==false)
-            {
-                System.out.println("数量太少");
-                break;
-            }
-
-            try {
-                Thread.sleep(500); //休眠 看清输出
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            //清屏
-            System.out.println(new String(new char[50]).replace("\0", "\r\n"));
-        }
+        Dandelifeon.Dcheck();
     }
 }
 

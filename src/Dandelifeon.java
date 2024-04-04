@@ -1,6 +1,14 @@
+import java.util.Scanner;
+
 public class Dandelifeon {
     private static int row=12;
     private static int col=12;
+    private ChessBoardWorldSystem chessBoard;
+
+    public void setchessBoard(ChessBoardWorldSystem chessBoard) {
+        this.chessBoard = chessBoard;
+    }
+
     public int countMana=0;
 
     public int getCountMana()
@@ -24,7 +32,7 @@ public class Dandelifeon {
         {
             for(int col=Dandelifeon.getCol()-1;col<=Dandelifeon.getCol()+1;col++)
             {
-                CellBlock Cell=ChessBoardWorldSystem.getCell(row,col);
+                CellBlock Cell= chessBoard.getCell(row,col);
                 if(Cell.isAlive()) //寻找存活细胞
                 {
                     flag=true;
@@ -39,10 +47,11 @@ public class Dandelifeon {
         {
             int count_check = getAccumulatedMana();
             System.out.print("\nGameOver,Mana:" + count_check + "\n");
-            ChessBoardWorldSystem.clearMap();
+            chessBoard.clearMap();
         }
         return flag;
     }
+
 
     public int getAccumulatedMana()
     {
@@ -51,7 +60,7 @@ public class Dandelifeon {
         {
             for(int col=Dandelifeon.getCol()-1;col<=Dandelifeon.getCol()+1;col++)
             {
-                CellBlock Cell=ChessBoardWorldSystem.getCell(row,col);
+                CellBlock Cell= chessBoard.getCell(row,col);
                 if(Cell.isAlive())//寻找存活细胞
                 {
                     count+=Cell.getAge();
@@ -66,9 +75,9 @@ public class Dandelifeon {
     {
         //限定区域
         int start_row = (m_row == 0 ? m_row : m_row - 1);
-        int end_row = (m_row == ChessBoardWorldSystem.getRow() - 1 ? m_row : m_row + 1);
+        int end_row = (m_row == chessBoard.getRow() - 1 ? m_row : m_row + 1);
         int start_col = (m_col == 0 ? m_col : m_col - 1);
-        int end_col = (m_col == ChessBoardWorldSystem.getCol() - 1 ? m_col : m_col + 1);
+        int end_col = (m_col == chessBoard.getCol() - 1 ? m_col : m_col + 1);
 
         int surrounding = 0;
         for (int row = start_row; row <= end_row; row++) {
@@ -76,7 +85,7 @@ public class Dandelifeon {
                 if (row == m_row && col == m_col) {
                     continue; //跳过这个点
                 }
-                CellBlock cell = ChessBoardWorldSystem.getCell(row, col);
+                CellBlock cell = chessBoard.getCell(row, col);
                 if (cell.isAlive()) {
                     surrounding++;
                 }
@@ -89,9 +98,9 @@ public class Dandelifeon {
     {
         //限定区域
         int start_row = (m_row == 0 ? m_row : m_row - 1);
-        int end_row = (m_row == ChessBoardWorldSystem.getRow() - 1 ? m_row : m_row + 1);
+        int end_row = (m_row == chessBoard.getRow() - 1 ? m_row : m_row + 1);
         int start_col = (m_col == 0 ? m_col : m_col - 1);
-        int end_col = (m_col == ChessBoardWorldSystem.getCol() - 1 ? m_col : m_col + 1);
+        int end_col = (m_col == chessBoard.getCol() - 1 ? m_col : m_col + 1);
 
         int MaxAge=0;
         for(int row=start_row;row<=end_row;row++)
@@ -102,7 +111,7 @@ public class Dandelifeon {
                 {
                     continue; //跳过这个点
                 }
-                CellBlock cell= ChessBoardWorldSystem.getCell(row,col);
+                CellBlock cell= chessBoard.getCell(row,col);
                 if(cell.isAlive())
                 {
                     if(cell.getAge()>MaxAge)
@@ -120,11 +129,11 @@ public class Dandelifeon {
         int count = 0;
         boolean flag = false;
         T:
-        for (int i = 0; i < ChessBoardWorldSystem.row; i++)
+        for (int i = 0; i < chessBoard.row; i++)
         {
-            for (int j = 0; j < ChessBoardWorldSystem.col; j++)
+            for (int j = 0; j < chessBoard.col; j++)
             {
-                CellBlock Cell=ChessBoardWorldSystem.getCell(i,j);
+                CellBlock Cell= chessBoard.getCell(i,j);
                 if (Cell.isAlive())
                 {
                     count++;
@@ -144,17 +153,17 @@ public class Dandelifeon {
         //如果一个细胞周围 8 格内的存活细胞数量 < 2 或 > 4该细胞会死亡并且年龄归 0 ；（即康威生命游戏中生命过少和过剩的情况）。
         //如果一个存活细胞周围有 8 格内有 2 ~ 3 个其他存活细胞，该细胞的年龄 + 1 。
         //如果一个死亡细胞周围8格内有 3 个存活细胞，该细胞会变为存活细胞，年龄则取周围 3 个存活细胞的年龄的最大值；（即康威生命游戏中的细胞繁殖）。
-        CellBlock[][] NewCell = new CellBlock[ChessBoardWorldSystem.row][ChessBoardWorldSystem.col];
-        for (int i = 0; i < ChessBoardWorldSystem.row; i++)
+        CellBlock[][] NewCell = new CellBlock[chessBoard.row][chessBoard.col];
+        for (int i = 0; i < chessBoard.row; i++)
         {
-            for (int j = 0; j < ChessBoardWorldSystem.col; j++)
+            for (int j = 0; j < chessBoard.col; j++)
             {
                 NewCell[i][j] = new CellBlock(0, false);
             }
         }
-        for (int i = 0; i < ChessBoardWorldSystem.row; i++)
+        for (int i = 0; i < chessBoard.row; i++)
         {
-            for (int j = 0; j < ChessBoardWorldSystem.col; j++)
+            for (int j = 0; j < chessBoard.col; j++)
             {
                 int count = getSurround(i,j);
                 if (Cell[i][j].isAlive()) {
@@ -174,6 +183,41 @@ public class Dandelifeon {
             }
         }
         return NewCell; //覆盖
+    }
+
+    public void Dcheck() //主要判断游戏是否结束
+    {
+        Scanner in = new Scanner(System.in);
+        //int num=in.nextInt();
+        chessBoard.initMap();
+        chessBoard.outputMap();
+        while(true) //游戏主循环
+        {
+            boolean flag = chessBoard.stepOneSecond();
+            if(flag==false)
+            {
+                System.out.println("启命英周围 8 格区域中出现存活细胞");
+                break;
+            }
+
+            System.out.print("\n");
+            chessBoard.outputMap();
+
+            flag=scan();
+            if(flag==false)
+            {
+                System.out.println("数量太少");
+                break;
+            }
+
+            try {
+                Thread.sleep(500); //休眠 看清输出
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            //清屏
+            System.out.println(new String(new char[50]).replace("\0", "\r\n"));
+        }
     }
 
 }
